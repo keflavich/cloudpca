@@ -51,6 +51,9 @@ def WidthEstimate2D(inList, method='contour', NoiseACF=0,
     ymat = np.fft.fftshift(ymat)
     rmat = (xmat**2+ymat**2)**0.5
 
+    if np.unravel_index(np.argmax(NoiseACF), NoiseACF.shape) == (0,0):
+        NoiseACF = np.fft.fftshift(NoiseACF)
+
     for idx,zraw in enumerate(inList):
         z = zraw - NoiseACF
         if np.unravel_index(np.argmax(z), z.shape) == (0,0):
@@ -73,8 +76,9 @@ def WidthEstimate2D(inList, method='contour', NoiseACF=0,
                 ax = plt.subplot(3,3,idx+1)
                 ax.imshow(z, cmap='afmhot')
                 ax.contour(output(xmat,ymat), levels=[z.max(),
-                                                      z.max()/np.exp(1),
-                                                      z.max()/np.exp(1)/2.],
+                                                      z.max()*0.75,
+                                                      z.max()*0.5,
+                                                      z.max()*0.25,],
                            colors=['c']*3)
         elif method == 'interpolate':
             rvec = rmat.ravel()
